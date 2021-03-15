@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 from operator import itemgetter
 import math
 import statistics
+import csv
 
-no_test = "JXSJD1M1-1"
-height = 9.5
-scale_exact_length = 9
-
-file_path = cv.imread("C:\\Users\\16130\\Desktop\\jar capacity\\jar_repository\\" + no_test +".jpg")
+def locate_row(id):
+    with open('C:\\Users\\16130\\Desktop\\jar capacity\\xuebu_db.csv', newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter='|')
+        for row in reader:
+            if row["Code"] == id:
+                return float(row["height"]), float(row["scale bar length"])
 
 def contour_detection(file_path):
     gray = cv.cvtColor(file_path, cv.COLOR_BGR2GRAY)
@@ -94,6 +96,10 @@ def measuring_radius(cleaned_x, middle_line, scale_exact_length, ratio):
         list.append(diameter)
     return list
 
+#set global variables
+no_test = "JXSJD1M1-1"
+height, scale_exact_length = locate_row(no_test)
+file_path = cv.imread("C:\\Users\\16130\\Desktop\\jar capacity\\jar_repository\\" + no_test +".jpg")
 
 contours = contour_detection(file_path)
 area_jar, area_scale, j_contour_index, s_contour_index = contour_area(contours)

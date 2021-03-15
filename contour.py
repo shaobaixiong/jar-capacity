@@ -5,11 +5,11 @@ from operator import itemgetter
 import math
 import statistics
 
-#ps里面的线条0.035cm既可，太粗的话内部线条也会被识别。
+no_test = "JXSJD1M1-1"
+height = 9.5
+scale_exact_length = 9
 
-no_test = "5"
-
-file_path = cv.imread("C:\\Users\\16130\\Desktop\\jar capacity\\cv_test\\test"+ no_test +".jpg")
+file_path = cv.imread("C:\\Users\\16130\\Desktop\\jar capacity\\jar_repository\\" + no_test +".jpg")
 
 def contour_detection(file_path):
     gray = cv.cvtColor(file_path, cv.COLOR_BGR2GRAY)
@@ -35,8 +35,10 @@ def contour_area(contours):
 
 def contour_display(file_path, contours, contour_index):
     contour_img = cv.drawContours(file_path, contours, contour_index, (0,255,0), 3)
+    cv.namedWindow('input',cv.WINDOW_NORMAL)
+    cv.resizeWindow('input', 600,600)
     cv.imshow("input",contour_img)
-    cv.imwrite("C:\\Users\\16130\\Desktop\\jar capacity\\cv_test\\contour" + no_test + ".jpg", contour_img)
+    cv.imwrite("C:\\Users\\16130\\Desktop\\jar capacity\\contour_repository\\contour_" + no_test + ".jpg", contour_img)
     cv.waitKey(0)
     cv.destroyAllWindows()
 
@@ -50,9 +52,6 @@ def generate_coordinates_lists(contours, contour_index):
         x_list.append(list_point[0])
         y_list.append(list_point[1])
     return x_list, y_list, x_y_list
-    #print(x_list)
-    #print(y_list)
-    #print(x_y_list)
 
 def draw_scatter_plot(x_list, y_list):
     plt.scatter(x_list, y_list, s=1)
@@ -64,7 +63,7 @@ def draw_scatter_plot(x_list, y_list):
     plt.xlim(0, x_lim)
     plt.ylim(0, y_lim)
     plt.gca().set_aspect('equal', adjustable='box')
-    #plt.savefig("C:\\Users\\16130\\Desktop\\jar capacity\\cv_test\\fig" + no_test + ".jpg")
+    plt.savefig("C:\\Users\\16130\\Desktop\\jar capacity\\scatter_repository\\plot_" + no_test + ".jpg")
     plt.show()
 
 def length(x_list):
@@ -95,7 +94,6 @@ def measuring_radius(cleaned_x, middle_line, scale_exact_length, ratio):
         list.append(diameter)
     return list
 
-scale_exact_length = 18
 
 contours = contour_detection(file_path)
 area_jar, area_scale, j_contour_index, s_contour_index = contour_area(contours)
@@ -110,8 +108,7 @@ if contours != "error":
 
     for y_value in j_y_list:
         j_x_y_list = remove_redundant(y_value)
-    manual_remove(261, 20)
-    manual_remove(170, 527)
+    #manual_remove(x,y)
     cleaned_x = []
     cleaned_y = []
     for point in j_x_y_list:
@@ -120,47 +117,6 @@ if contours != "error":
     draw_scatter_plot(cleaned_x, cleaned_y)
 
     r_list = measuring_radius(cleaned_x, middle_line, scale_exact_length, ratio)
-    volume = (math.pi * ((sum(r_list)/len(r_list))**2) * 46) / 1000
-    print("The volume of the jar is,", volume, "L")
-
-
-
-
-    #cleaned_y.sort()
-    #j_x_y_list.sort(key=itemgetter(1))
-
-
-    #sorted_x = []
-    #for point in j_x_y_list:
-    #    sorted_x.append(point[0])
-    #print(sorted_x)
-    #print(cleaned_y)
-'''
-
-def determine_num_groups(sorted_x):
-    b = math.floor(len(sorted_x) / 3)
-    a = len(sorted_x) / 3
-    if a - b == 0:
-        return b
-    else:
-        b = len(sorted_x) % math.floor(a)
-        if b == 1:
-            return b-1
-        else:
-            return b
-
-def division(list, num):
-    average = len(list) / num
-    result = []
-    last = 0
-    while last < len(list):
-        result.append(list[int(last):int(last + average)])
-        last += average
-    return result
-'''
-
-#num = determine_num_groups(sorted_x)
-#divided_lists = division(sorted_x, num)
-#for list in divided_lists:
-#    print(list)
-#    print(max(list)-min(list))
+    volume = "{:.2f}".format((math.pi * ((sum(r_list)/len(r_list))**2) * height) / 1000)
+    #print("The estimated height is", estimated_height, ";" , "the exact height is", height, ".")
+    print("The volume of the jar is approximately", volume, "L")

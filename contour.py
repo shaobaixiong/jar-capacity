@@ -97,7 +97,7 @@ def measuring_radius(cleaned_x, middle_line, scale_exact_length, ratio):
     return list
 
 #set global variables
-no_test = "JXSJD1M1-1"
+no_test = "JXSJD1Q2-7"
 height, scale_exact_length = locate_row(no_test)
 file_path = cv.imread("C:\\Users\\16130\\Desktop\\jar capacity\\jar_repository\\" + no_test +".jpg")
 
@@ -124,5 +124,8 @@ if contours != "error":
 
     r_list = measuring_radius(cleaned_x, middle_line, scale_exact_length, ratio)
     volume = "{:.2f}".format((math.pi * ((sum(r_list)/len(r_list))**2) * height) / 1000)
-    #print("The estimated height is", estimated_height, ";" , "the exact height is", height, ".")
+    estimated_height = "{:.2f}".format(ratio * (max(cleaned_y) - min(cleaned_y)))
+    accuracy_rate = ((height - float(estimated_height)) / height) * 100
+    print("{:.2f}".format(accuracy_rate), "%")
+    print("The estimated height is", estimated_height, ";" , "the exact height is", height, ".")
     print("The volume of the jar is approximately", volume, "L")
